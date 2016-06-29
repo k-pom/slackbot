@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from slackbot.bot import listen_to, dispatcher
 
 
-DEFAULT_TIMEOUT = 10  # will auto release the locks after this many seconds
+DEFAULT_TIMEOUT = 3600  # will auto release the locks after this many seconds
 DATE_FORMAT = "%Y-%m-%d %H:%M"
 
 EXPIRED="EXPIRED"
