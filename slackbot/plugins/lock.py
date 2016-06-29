@@ -3,7 +3,7 @@ import json
 import re
 from datetime import datetime, timedelta
 
-from slackbot.bot import listen_to, dispatcher
+from slackbot.bot import listen_to, dispatcher, respond_to
 
 
 DEFAULT_TIMEOUT = 3600  # will auto release the locks after this many seconds
@@ -16,6 +16,20 @@ OPEN="OPEN"
 locks = {
     # ord: {user: 'U123534' time: datetime.now }
 }
+
+@respond_to('.*')
+def help(message):
+    commands = [
+        "system.lock()    # Locks the system if it is available (default for one hour)",
+        "system.lock(90)  # locks the system for 90 seconds",
+        "system.unlock()  # Unlocks the system, if you have the lock on it",
+        "system.notify()  # Receive a notification when the lock is removed or expired",
+        "system.status()  # Get the lock information for a system"
+    ]
+    message.reply('You can issue the following commands. [system] should be replaced with iad, dfw, or ord ')
+    # react with thumb up emoji
+    message.react('+1')
+
 
 def _parse(message):
 
