@@ -87,7 +87,7 @@ def lock(message):
     if lock_status == LOCKED:
         return message.send('<@{}> is holding the lock until {}'.format(lock['user'], lock['expires_str']))
 
-    timout = DEFAULT_TIMEOUT
+    timeout = DEFAULT_TIMEOUT
     try:
         timeout = int(data['arguments'])
     except:
