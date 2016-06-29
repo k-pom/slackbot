@@ -87,7 +87,12 @@ def lock(message):
     if lock_status == LOCKED:
         return message.send('<@{}> is holding the lock until {}'.format(lock['user'], lock['expires_str']))
 
-    timeout = int(data['arguments']) or DEFAULT_TIMEOUT
+    timout = DEFAULT_TIMEOUT
+    try:
+        timeout = int(data['arguments'])
+    except:
+        pass  # if its not an int, use the default
+
     expires = datetime.now() + timedelta(0, timeout)
     locks[data['system']] = {
         "user": data['user'],
