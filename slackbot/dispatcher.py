@@ -11,6 +11,7 @@ import six
 from slackbot.manager import PluginsManager
 from slackbot.utils import WorkerPool
 from slackbot import settings
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class MessageDispatcher(object):
         self._pool = WorkerPool(self.dispatch_msg)
         self._plugins = plugins
         self._errors_to = None
+        self._delayed_messages = {}
         if errors_to:
             self._errors_to = self._client.find_channel_by_name(errors_to)
             if not self._errors_to:
@@ -37,6 +39,16 @@ class MessageDispatcher(object):
 
     def start(self):
         self._pool.start()
+
+    def delayed_message(self, key, message, text, delay):
+        run_time = (datetime.now() + timedelta(0, delay))
+        self._delayed_messages[key] = {'run_time': run_time, 'message': message, 'text': text }
+
+    def cancel_delayed_message(self, key):
+        del self._delayed_messages[key]
+
+    def append_delayed_message(self, key, append_text):
+        self._delayed_messages[key]['text'] += append_text
 
     def dispatch_msg(self, msg):
         category = msg[0]
@@ -141,6 +153,16 @@ class MessageDispatcher(object):
                 if event.get('type') != 'message':
                     continue
                 self._on_new_message(event)
+
+            now = datetime.now()
+            sent = []
+            for k, message in self._delayed_messages.items():
+                if(now > message['run_time']):
+                    sent.append(k)
+                    message['message'].reply(message['text'])
+            for s in sent:
+                del self._delayed_messages[s]
+
             time.sleep(1)
 
     def _default_reply(self, msg):

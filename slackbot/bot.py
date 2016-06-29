@@ -14,6 +14,7 @@ from slackbot.dispatcher import MessageDispatcher
 
 logger = logging.getLogger(__name__)
 
+dispatcher = None
 
 class Bot(object):
     def __init__(self):
@@ -27,6 +28,8 @@ class Bot(object):
         self._plugins = PluginsManager()
         self._dispatcher = MessageDispatcher(self._client, self._plugins,
                                              settings.ERRORS_TO)
+        global dispatcher
+        dispatcher = self._dispatcher
 
     def run(self):
         self._plugins.init_plugins()
